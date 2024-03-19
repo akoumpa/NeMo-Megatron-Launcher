@@ -101,9 +101,6 @@ RUN git clone https://github.com/NVIDIA/NeMo-Aligner.git && \
     fi && \
     pip install --no-deps -e .
 
-# HF cache
-RUN python -c "from transformers import AutoTokenizer; tok_gpt=AutoTokenizer.from_pretrained('gpt2'); tok_bert=AutoTokenizer.from_pretrained('bert-base-cased'); tok_large_bert=AutoTokenizer.from_pretrained('bert-large-cased'); tok_large_uncased_bert=AutoTokenizer.from_pretrained('bert-large-uncased');"
-
 # Install TE
 ARG TE_COMMIT
 RUN git clone https://github.com/NVIDIA/TransformerEngine.git && \
@@ -125,10 +122,11 @@ RUN git clone https://github.com/NVIDIA/Megatron-LM.git && \
     fi && \
     pip install -e .
 
-# Install launch scripts
+# Install launch scripts & HF cacheo
 ARG LAUNCHER_COMMIT
 RUN git clone https://github.com/NVIDIA/NeMo-Megatron-Launcher.git && \
     cd NeMo-Megatron-Launcher && \
+    python launcher_scripts/tokenizer_preloader.py && \
     git pull && \
     if [ ! -z $LAUNCHER_COMMIT ]; then \
         git fetch origin $LAUNCHER_COMMIT && \
